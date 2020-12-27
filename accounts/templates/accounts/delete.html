@@ -4,17 +4,23 @@
 {% load static %}
 
 {% block content %}
+<br>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-body">
+                <p>Are you sure you want to delete "{{item}}"</p>
 
-<p>Are you sure you want to delete "{{item}}"</p>
+                <form method="POST" action="{% url 'order_delete' item.id %}" style="margin-top:3px;">
 
-<form method="POST" action="{% url 'order_delete' item.id %}" style="margin-top:3px;">
+                    {% csrf_token %}
 
-    {% csrf_token %}
+                    <a class="btn btn-sm btn-primary" href="{% url 'dashboard' %}">Cancel</a>
 
-    <a class="btn btn-sm btn-primary" href="{% url 'dashboard' %}">Cancel</a>
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
 
-    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-
-</form>
+                </form>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

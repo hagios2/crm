@@ -5,14 +5,23 @@
 
 {% block content %}
 
-<form method="POST" style="margin-top:2px;">
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-body">
 
-    {% csrf_token %}
+            <form method="POST" style="margin-top:2px;">
 
-    {{form}}
+                {% csrf_token %}
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+                {{form}}
 
-</form>
+                <button type="submit" class="btn btn-primary">Submit</button>
+
+            </form>
+        </div>
+
+    </div>
+
+</div>
 
 {% endblock %}
