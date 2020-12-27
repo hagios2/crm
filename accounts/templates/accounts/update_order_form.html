@@ -5,13 +5,13 @@
 
 {% block content %}
 
-<form method="POST" style="margin-top:2px;">
+<form method="POST" action="" style="margin-top:3px;">
 
     {% csrf_token %}
 
     {{form}}
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary">Update</button>
 
 </form>
 
