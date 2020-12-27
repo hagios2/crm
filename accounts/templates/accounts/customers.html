@@ -11,7 +11,7 @@
 			<h5>Customer: {{customer.name}}</h5>
 			<hr>
 			<a class="btn btn-outline-info  btn-sm btn-block" href="">Update Customer</a>
-			<a class="btn btn-outline-danger  btn-sm btn-block" href="">Delete Customer</a>
+			<a class="btn btn-outline-primary  btn-sm btn-block" href="{% url 'order_create' customer.id %}">Create Order</a>
 
 		</div>
 	</div>
@@ -71,7 +71,7 @@
 							<td>{{order.created_at}}</td>
 								<td><span class="badge badge-warning">{{order.status}}</span></td>
 								<td><a class="btn btn-info sm-btn" href="{% url 'order_update' order.id %}">Update</a></td>
-								<td><a class="btn btn-warning sm-btn" href="{% url 'order_delete' order.id %}">Delete</a></td>
+								<td><a class="btn btn-danger sm-btn" href="{% url 'order_delete' order.id %}">Delete</a></td>
 						</tr>
 					{% endfor %}
 				</tbody>
