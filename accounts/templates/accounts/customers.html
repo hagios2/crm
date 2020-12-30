@@ -41,6 +41,8 @@
 		<div class="card card-body">
 			<form method="get">
 
+				{{query_filter.form}}
+
 		    <button class="btn btn-primary" type="submit">Search</button>
 		  </form>
 		</div>
@@ -56,7 +58,7 @@
 				<thead>
 					<tr>
 						<th>Product</th>
-						<th>Category</th>
+						<th>Note</th>
 						<th>Date Ordered</th>
 						<th>Status</th>
 						<th>Update</th>
@@ -67,7 +69,7 @@
 					{% for order in orders %}
 						<tr>
 							<td>{{order.product}}</td>
-							<td>{{order.product.category}}</td>
+							<td>{{order.note}}</td>
 							<td>{{order.created_at}}</td>
 								<td><span class="badge badge-warning">{{order.status}}</span></td>
 								<td><a class="btn btn-info sm-btn" href="{% url 'order_update' order.id %}">Update</a></td>
