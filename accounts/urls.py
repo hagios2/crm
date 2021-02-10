@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (home, customers, products, createOrder, updateOrder, deleteOrder, loginPage, register, logoutPage)
+from .views import (home, customers, products, createOrder, updateOrder, userPage, deleteOrder, loginPage, register, logoutPage)
 
 urlpatterns = [
     path('', home, name='dashboard'),
@@ -10,5 +10,6 @@ urlpatterns = [
     path('delete/<int:pk>/order', deleteOrder, name='order_delete'),
     path('auth/login', loginPage, name='auth_login'),
     path('auth/logout', logoutPage, name='auth_logout'),
-    path('auth/register', register, name='auth_register')
+    path('auth/register', register, name='auth_register'),
+    path('user', userPage, name='user_page')
 ]

@@ -7,9 +7,12 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from .decorators import unauthenticated_user, allowed_users, admin_only
+from django.contrib.auth.models import Group
 
 # Create your views here.
 @login_required(login_url='auth_login')
+@admin_only
 def home(request):
     orders = Order.objects.all()
     customers = Customer.objects.all()
@@ -22,11 +25,13 @@ def home(request):
     return render(request, 'accounts/dashboard.html', response)
 
 @login_required(login_url='auth_login')
+@allowed_users(allowed_roles=['admin'])
 def products(request):
     products = Product.objects.all()
     return render(request, 'accounts/products.html', {'products': products})
 
 @login_required(login_url='auth_login')
+@allowed_users(allowed_roles=['admin'])
 def customers(request, pk_text):
     customer = Customer.objects.get(id=pk_text)
     orders = customer.order_set.all()
@@ -37,6 +42,7 @@ def customers(request, pk_text):
     return render(request, 'accounts/customers.html', {'customer':customer, 'orders':orders, 'order_count': order_count, 'query_filter':query_filter})
 
 @login_required(login_url='auth_login')
+@allowed_users(allowed_roles=['admin'])
 def createOrder(request, pk):
     order_form_set = inlineformset_factory(Customer, Order, fields=('product', 'status'), extra=8)
     customer = Customer.objects.get(id=pk)
@@ -52,6 +58,7 @@ def createOrder(request, pk):
     return render(request, 'accounts/order_create.html', context)
 
 @login_required(login_url='auth_login')
+@allowed_users(allowed_roles=['admin'])
 def updateOrder(request, pk):
     order = Order.objects.get(id=pk)
 
@@ -66,6 +73,7 @@ def updateOrder(request, pk):
     return render(request, 'accounts/update_order_form.html', context)
 
 @login_required(login_url='auth_login')
+@allowed_users(allowed_roles=['admin'])
 def deleteOrder(request, pk):
     order = Order.objects.get(id=pk)
 
@@ -76,23 +84,24 @@ def deleteOrder(request, pk):
     context = {'item': order}
     return render(request, 'accounts/delete.html', context)
 
-
+@unauthenticated_user
 def loginPage(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-    else:
-        context = {}
-        if request.method == 'POST':
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('dashboard')
-            else:
-                messages.info(request, 'Invalid email or password')
-                return render(request, 'accounts/login.html', context)
-        return render(request, 'accounts/login.html', context)
+    context = {}
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            messages.info(request, 'Invalid email or password')
+            return render(request, 'accounts/login.html', context)
+    return render(request, 'accounts/login.html', context)
+
+def userPage(request):
+    context = {}
+    return render(request, 'accounts/user_page.html', context)
 
 @login_required(login_url='auth_login')
 def logoutPage(request):
@@ -100,18 +109,18 @@ def logoutPage(request):
     context = {}
     return render(request, 'accounts/login.html', context)
 
-
+@unauthenticated_user
 def register(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-    else:
-        form = CreateUserForm()
-        if request.method == 'POST':
-            form = CreateUserForm(request.POST)
-            if form.is_valid():
-                form.save()
-                user = form.cleaned_data.get('username')
-                messages.success(request, 'Account has been created successfully for ' + user)
-                return redirect('auth_login')
-            context = {'form':form}
-        return render(request, 'accounts/register.html', context)
+    form = CreateUserForm()
+    context = {'form':form}
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, 'Account has been created successfully for ' + username)
+            group = Group.objects.get(name='customer')
+            user.groups.add(group)
+            return redirect('auth_login')
+            
+    return render(request, 'accounts/register.html', context)
